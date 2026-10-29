@@ -1,0 +1,13 @@
+{
+  "name": "listening-poster",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "fetch": "node src/fetch.ts",
+    "render": "node src/render.ts"
+  },
+  "dependencies": {
+    "@napi-rs/canvas": "^1.0.13",
+    "csv-parse": "^7.0.3"
+  }
+}
