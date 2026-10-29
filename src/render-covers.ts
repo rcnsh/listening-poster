@@ -128,8 +128,10 @@ for (const year of years) {
       ctx.fillRect(x, ty, tile, tile);
     }
     const m = p.local.getUTCMonth();
-    if (m !== month && ty + tile - labelY >= 40) {
-      month = m;
+    if (m === month) return;
+    month = m;
+    // Skip a label that would overlap the previous one (a quiet month).
+    if (ty + tile - labelY >= 40) {
       labelY = ty + tile;
       ctx.fillStyle = config.muted;
       ctx.font = font(30);
