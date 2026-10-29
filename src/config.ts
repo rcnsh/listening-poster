@@ -1,12 +1,7 @@
-// Everything personal lives here; src/render.ts only reads this file.
+// Everything personal lives here; the render scripts only read this file.
 
 export const config = {
   csv: "data/plays.csv",
-  out: "out/poster.png",
-  preview: "out/preview.png",
-
-  title: "Every song I played",
-  author: "rcnsh",
 
   // Plays before this are too sparse to draw (about 50 between 2017 and 2019).
   start: "2020-01-01",
@@ -22,29 +17,30 @@ export const config = {
   // nights stay with the evening before them.
   dayStartsAt: 5,
 
-  // A2 landscape at 300 dpi.
-  width: 7016,
-  height: 4961,
+  // pnpm render: one dot per play. A2 landscape at 300 dpi.
+  dots: {
+    out: "out/poster.png",
+    preview: "out/preview.png",
+    width: 7016,
+    height: 4961,
+    // The most-played artists get a colour; everyone else is grey.
+    colours: [
+      "#ff5a4e", "#3cc8ff", "#ff8ad6", "#ffd23c", "#ff9a3c", "#9b86ff",
+      "#6ef08a", "#4a7dff", "#c6f03c", "#2fe0bf", "#e8b98a", "#ff4f9a",
+    ],
+    other: "rgba(160, 160, 185, 0.4)",
+    background: ["#120f24", "#06060b"],
+  },
 
-  // The most-played artists get a colour; everyone else is grey.
-  colours: [
-    "#ff5a4e", "#3cc8ff", "#ff8ad6", "#ffd23c", "#ff9a3c", "#9b86ff",
-    "#6ef08a", "#4a7dff", "#c6f03c", "#2fe0bf", "#e8b98a", "#ff4f9a",
-  ],
-  other: "rgba(150, 150, 170, 0.38)",
-  background: "#0a0a0f",
-  ink: "#ececf2",
-  muted: "#6e6e80",
-  font: "Avenir Next",
-
-  // The album-cover mosaic (pnpm render:covers): A1 portrait at 300 dpi.
+  // pnpm render:covers: every play as its album cover. A1 portrait at 300 dpi.
   covers: {
     out: "out/covers.png",
     preview: "out/covers-preview.png",
-    title: "Every song I played, by its cover",
     width: 7016,
     height: 9933,
-    gap: 2,
-    blank: "#1b1b24",
+    gap: 3,
+    radius: 4,
+    blank: "#2a2a30",
+    paper: ["#f3efe8", "#e7e1d7"],
   },
 };
