@@ -36,4 +36,15 @@ export const config = {
   ink: "#ececf2",
   muted: "#6e6e80",
   font: "Avenir Next",
+
+  // The album-cover mosaic (pnpm render:covers): A1 portrait at 300 dpi.
+  covers: {
+    out: "out/covers.png",
+    preview: "out/covers-preview.png",
+    title: "Every song I played, by its cover",
+    width: 7016,
+    height: 9933,
+    gap: 2,
+    blank: "#1b1b24",
+  },
 };

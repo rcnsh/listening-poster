@@ -4,7 +4,9 @@
   "type": "module",
   "scripts": {
     "fetch": "node src/fetch.ts",
-    "render": "node src/render.ts"
+    "render": "node src/render.ts",
+    "fetch:covers": "node src/fetch-covers.ts",
+    "render:covers": "node src/render-covers.ts"
   },
   "dependencies": {
     "@napi-rs/canvas": "^1.0.13",

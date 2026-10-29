@@ -4,6 +4,7 @@ import { createCanvas, GlobalFonts } from "@napi-rs/canvas";
 import { parse } from "csv-parse/sync";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { config } from "./config.ts";
+import { wallClock } from "./time.ts";
 
 const DAY = 86_400_000;
 const { width: W, height: H } = config;
@@ -15,24 +16,6 @@ const font = (size: number, weight = 500) => `${weight} ${size}px "${config.font
 
 type Row = { played_at: string; artists: string };
 type Play = { day: number; minute: number; artist: string };
-
-const zones = config.timezones.map((z) => ({
-  from: Date.parse(`${z.from}T00:00:00Z`),
-  fmt: new Intl.DateTimeFormat("en-GB", {
-    timeZone: z.tz,
-    hourCycle: "h23",
-    year: "numeric", month: "numeric", day: "numeric",
-    hour: "numeric", minute: "numeric",
-  }),
-}));
-
-// Wall-clock time where the play happened, as if it were UTC, shifted so the
-// day starts at config.dayStartsAt.
-function wallClock(ms: number) {
-  const zone = zones.findLast((z) => ms >= z.from) ?? zones[0];
-  const p = Object.fromEntries(zone.fmt.formatToParts(ms).map((x) => [x.type, x.value]));
-  return Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour, +p.minute) - config.dayStartsAt * 3_600_000;
-}
 
 const start = Date.parse(`${config.start}T00:00:00Z`);
 const rows: Row[] = parse(readFileSync(config.csv), { columns: true });
