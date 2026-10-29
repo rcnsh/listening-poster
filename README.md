@@ -8,11 +8,11 @@ pnpm fetch    # downloads /api/plays.csv into data/
 pnpm render   # writes out/poster.png (A2, 300 dpi) and out/preview.png
 ```
 
-`pnpm fetch` reads `MW_URL` and `MW_TOKEN`, falling back to the Keychain entry `music-warehouse-mcp`. Neither poster has any text. Start date, time zones, sizes, palette and backgrounds are in `src/config.ts`.
+`pnpm fetch` reads `MW_URL` and `MW_TOKEN`, falling back to the Keychain entry `music-warehouse-mcp`. Title, start date, time zones, size and palette are in `src/config.ts`.
 
 ## Album-cover version
 
-Every play as its album cover, in order, as one mosaic on warm paper, on A1 portrait.
+Every play as its album cover, in order, one band per year, on A1 portrait.
 
 ```sh
 pnpm fetch:covers    # pages /api/plays into data/plays.json and downloads each cover once
