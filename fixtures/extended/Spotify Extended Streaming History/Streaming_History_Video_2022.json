@@ -1,0 +1,27 @@
+[
+ {
+  "ts": "2022-05-05T05:05:05Z",
+  "platform": "ios",
+  "ms_played": 90000,
+  "conn_country": "GB",
+  "ip_addr": "0.0.0.0",
+  "master_metadata_track_name": "Some video",
+  "master_metadata_album_artist_name": "Someone",
+  "master_metadata_album_album_name": "A",
+  "spotify_track_uri": "spotify:track:3cCxoOgfi6hgt8MNteuiiD",
+  "episode_name": null,
+  "episode_show_name": null,
+  "spotify_episode_uri": null,
+  "audiobook_title": null,
+  "audiobook_uri": null,
+  "audiobook_chapter_uri": null,
+  "audiobook_chapter_title": null,
+  "reason_start": "trackdone",
+  "reason_end": "trackdone",
+  "shuffle": false,
+  "skipped": false,
+  "offline": false,
+  "offline_timestamp": null,
+  "incognito_mode": false
+ }
+]

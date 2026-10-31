@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "import:spotify": "node src/import.ts",
     "fetch": "node src/fetch.ts",
     "render": "node src/render.ts",
     "fetch:covers": "node src/fetch-covers.ts",
