@@ -120,7 +120,7 @@ for (const z of config.timezones) {
   ctx.fillStyle = config.ink;
   ctx.font = font(42, 600);
   ctx.textAlign = "right";
-  ctx.fillText(`${z.tz.split("/")[1].replace("_", " ")} →`, x - 16, y0 - 50);
+  ctx.fillText(`${z.tz.split("/").at(-1)!.replaceAll("_", " ")} →`, x - 16, y0 - 50);
   ctx.textAlign = "left";
 }
 
