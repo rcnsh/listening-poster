@@ -16,7 +16,7 @@ const n = (x: number) => x.toLocaleString("en-GB");
 // ---- data ---------------------------------------------------------------
 
 type Play = CoverPlay & { local: Date };
-const start = Date.parse(`${config.start}T00:00:00Z`);
+const start = config.start ? Date.parse(`${config.start}T00:00:00Z`) : -Infinity;
 const plays: Play[] = (JSON.parse(readFileSync("data/plays.json", "utf8")) as CoverPlay[])
   .map((p) => ({ ...p, local: new Date(wallClock(p.ms)) }))
   .filter((p) => p.local.getTime() >= start)
@@ -153,7 +153,7 @@ ctx.font = font(40);
 ctx.textAlign = "left";
 ctx.fillText(`${n(covers.size)} different covers. ${n(blanks)} plays have no cover stored and are blank.`, margin, H - 220);
 ctx.textAlign = "right";
-ctx.fillText(`${config.author} · music-warehouse`, mx1, H - 220);
+ctx.fillText(config.footer, mx1, H - 220);
 
 // ---- output -------------------------------------------------------------
 

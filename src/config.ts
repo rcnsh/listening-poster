@@ -1,22 +1,32 @@
-// Everything personal lives here; src/render.ts only reads this file.
+// Settings for both posters. These are neutral defaults; put your own values
+// in src/config.local.ts (gitignored), which is merged over them:
+//
+//   export default {
+//     title: "Every song I played",
+//     footer: "me · music-warehouse",
+//     start: "2020-01-01",
+//     timezones: [{ from: "2000-01-01", tz: "Europe/London" }],
+//     covers: { title: "Every song I played, by its cover" },
+//   };
+import { existsSync } from "node:fs";
 
-export const config = {
+const defaults = {
   csv: "data/plays.csv",
   out: "out/poster.png",
   preview: "out/preview.png",
 
-  title: "Every song I played",
-  author: "rcnsh",
+  title: "Every song played",
+  // Bottom-right corner, e.g. "name · source". Empty draws nothing.
+  footer: "",
 
-  // Plays before this are too sparse to draw (about 50 between 2017 and 2019).
-  start: "2020-01-01",
+  // First day drawn, YYYY-MM-DD. Null starts at the first play; set it to
+  // drop a sparse early stretch.
+  start: null as string | null,
 
-  // Local time is wherever you were. Each entry applies from its date on.
-  // The Singapore date is where the listening hours jump by 8 hours.
-  timezones: [
-    { from: "2000-01-01", tz: "Europe/London" },
-    { from: "2026-07-28", tz: "Asia/Singapore" },
-  ],
+  // Local time is wherever you were. Each entry applies from its date on,
+  // and a later entry is marked on the dots poster. The default is this
+  // machine's time zone throughout.
+  timezones: [{ from: "2000-01-01", tz: Intl.DateTimeFormat().resolvedOptions().timeZone }],
 
   // The day runs from this hour to the same hour next morning, so late
   // nights stay with the evening before them.
@@ -41,10 +51,19 @@ export const config = {
   covers: {
     out: "out/covers.png",
     preview: "out/covers-preview.png",
-    title: "Every song I played, by its cover",
+    title: "Every song played, by its cover",
     width: 7016,
     height: 9933,
     gap: 2,
     blank: "#1b1b24",
   },
 };
+
+type Config = typeof defaults;
+type Local = Partial<Omit<Config, "covers">> & { covers?: Partial<Config["covers"]> };
+
+const local: Local = existsSync(new URL("./config.local.ts", import.meta.url))
+  ? (await import("./config.local.ts")).default
+  : {};
+
+export const config: Config = { ...defaults, ...local, covers: { ...defaults.covers, ...local.covers } };

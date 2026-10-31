@@ -17,11 +17,14 @@ const font = (size: number, weight = 500) => `${weight} ${size}px "${config.font
 type Row = { played_at: string; artists: string };
 type Play = { day: number; minute: number; artist: string };
 
-const start = Date.parse(`${config.start}T00:00:00Z`);
 const rows: Row[] = parse(readFileSync(config.csv), { columns: true });
+const local = rows.map((r) => wallClock(Date.parse(r.played_at)));
+const start = config.start
+  ? Date.parse(`${config.start}T00:00:00Z`)
+  : Math.floor(local.reduce((a, b) => Math.min(a, b)) / DAY) * DAY;
 const plays: Play[] = [];
-for (const r of rows) {
-  const t = wallClock(Date.parse(r.played_at)) - start;
+for (const [i, r] of rows.entries()) {
+  const t = local[i] - start;
   if (t < 0) continue;
   plays.push({
     day: Math.floor(t / DAY),
@@ -163,7 +166,7 @@ ctx.fillText(
   x0, H - 200,
 );
 ctx.textAlign = "right";
-ctx.fillText(`${config.author} · music-warehouse`, x1, H - 200);
+ctx.fillText(config.footer, x1, H - 200);
 
 // ---- output -------------------------------------------------------------
 
