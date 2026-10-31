@@ -21,6 +21,10 @@ const plays: Play[] = (JSON.parse(readFileSync("data/plays.json", "utf8")) as Co
   .map((p) => ({ ...p, local: new Date(wallClock(p.ms)) }))
   .filter((p) => p.local.getTime() >= start)
   .sort((a, b) => a.ms - b.ms);
+if (!plays.length) {
+  console.error(`No plays in data/plays.json${config.start ? ` from ${config.start}` : ""}. Run pnpm import:spotify or pnpm fetch:covers first.`);
+  process.exit(1);
+}
 
 const covers = new Map<string, Image>();
 for (const id of new Set(plays.map((p) => p.cover))) {

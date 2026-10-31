@@ -21,7 +21,7 @@ const rows: Row[] = parse(readFileSync(config.csv), { columns: true });
 const local = rows.map((r) => wallClock(Date.parse(r.played_at)));
 const start = config.start
   ? Date.parse(`${config.start}T00:00:00Z`)
-  : Math.floor(local.reduce((a, b) => Math.min(a, b)) / DAY) * DAY;
+  : Math.floor(local.reduce((a, b) => Math.min(a, b), Infinity) / DAY) * DAY;
 const plays: Play[] = [];
 for (const [i, r] of rows.entries()) {
   const t = local[i] - start;
@@ -33,6 +33,10 @@ for (const [i, r] of rows.entries()) {
     // one album artist, which may itself contain ", " (Tyler, The Creator).
     artist: !r.artists ? "Unknown" : r.source === "export" ? r.artists : r.artists.split(", ")[0],
   });
+}
+if (!plays.length) {
+  console.error(`No plays in ${config.csv}${config.start ? ` from ${config.start}` : ""}. Run pnpm import:spotify or pnpm fetch first.`);
+  process.exit(1);
 }
 plays.sort((a, b) => a.day - b.day || a.minute - b.minute);
 const days = plays.at(-1)!.day + 1;

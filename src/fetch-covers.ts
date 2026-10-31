@@ -1,15 +1,8 @@
 // Pages /api/plays for every play's album cover, then downloads each cover
 // once from Spotify's image CDN (no Web API calls, so no quota cost).
-import { execFileSync } from "node:child_process";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { type CoverPlay, downloadCovers, get, smallCover } from "./covers.ts";
-
-const base = process.env.MW_URL ?? "https://music-api.rcn.sh";
-const token =
-  process.env.MW_TOKEN ??
-  execFileSync("security", ["find-generic-password", "-s", "music-warehouse-mcp", "-w"], {
-    encoding: "utf8",
-  }).trim();
+import { base, token } from "./mw.ts";
 const headers = { authorization: `Bearer ${token}` };
 
 type ApiPlay = { played_at_ms: number; artists: string | null; album_name: string | null; image_url: string | null };
