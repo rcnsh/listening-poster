@@ -29,9 +29,10 @@ for (const [i, r] of rows.entries()) {
   plays.push({
     day: Math.floor(t / DAY),
     minute: (t % DAY) / 60_000,
-    // music-warehouse joins a track's artists with ", "; an export row holds
-    // one album artist, which may itself contain ", " (Tyler, The Creator).
-    artist: !r.artists ? "Unknown" : r.source === "export" ? r.artists : r.artists.split(", ")[0],
+    // music-warehouse joins a track's artists with ", " (its own "export"
+    // rows too); a row from pnpm import:spotify holds one album artist, which
+    // may itself contain ", " (Tyler, The Creator).
+    artist: !r.artists ? "Unknown" : r.source === "spotify-export" ? r.artists : r.artists.split(", ")[0],
   });
 }
 if (!plays.length) {

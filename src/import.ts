@@ -139,7 +139,7 @@ writeFileSync(
   ["played_at,track,artists,album,track_id,context_uri,context_name,source"]
     .concat(
       sorted.map((p) =>
-        [new Date(p.ms).toISOString(), p.track, p.artist, p.album ?? "", p.trackId ?? "", "", "", "export"]
+        [new Date(p.ms).toISOString(), p.track, p.artist, p.album ?? "", p.trackId ?? "", "", "", "spotify-export"]
           .map(csvField)
           .join(","),
       ),
