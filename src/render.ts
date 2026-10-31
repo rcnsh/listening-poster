@@ -1,11 +1,9 @@
 // Draws every play as one dot: across is the date, down is the local time of
 // day, colour is the primary artist. Writes a print PNG and a small preview.
 import { createCanvas, GlobalFonts } from "@napi-rs/canvas";
-import { parse } from "csv-parse/sync";
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, writeFileSync } from "node:fs";
 import { config } from "./config.ts";
-import { primaryArtist } from "./plays.ts";
-import { wallClock } from "./time.ts";
+import { readPlays } from "./plays.ts";
 
 const DAY = 86_400_000;
 const { width: W, height: H } = config;
@@ -15,28 +13,15 @@ const font = (size: number, weight = 500) => `${weight} ${size}px "${config.font
 
 // ---- data ---------------------------------------------------------------
 
-type Row = { played_at: string; artists: string; source?: string };
 type Play = { day: number; minute: number; artist: string };
 
-const rows: Row[] = parse(readFileSync(config.csv), { columns: true });
-const local = rows.map((r) => wallClock(Date.parse(r.played_at)));
-const start = config.start
-  ? Date.parse(`${config.start}T00:00:00Z`)
-  : Math.floor(local.reduce((a, b) => Math.min(a, b), Infinity) / DAY) * DAY;
-const plays: Play[] = [];
-for (const [i, r] of rows.entries()) {
-  const t = local[i] - start;
-  if (t < 0) continue;
-  plays.push({
-    day: Math.floor(t / DAY),
-    minute: (t % DAY) / 60_000,
-    artist: primaryArtist(r),
-  });
-}
-if (!plays.length) {
-  console.error(`No plays in ${config.csv}${config.start ? ` from ${config.start}` : ""}. Run pnpm import:spotify or pnpm fetch first.`);
-  process.exit(1);
-}
+const read = readPlays();
+const start = read.start;
+const plays: Play[] = read.plays.map((p) => ({
+  day: Math.floor((p.t - start) / DAY),
+  minute: ((p.t - start) % DAY) / 60_000,
+  artist: p.artist,
+}));
 plays.sort((a, b) => a.day - b.day || a.minute - b.minute);
 const days = plays.at(-1)!.day + 1;
 
