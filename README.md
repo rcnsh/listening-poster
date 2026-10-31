@@ -1,9 +1,11 @@
 # listening-poster
 
-Two print posters of a Spotify listening history:
+Four print posters of a Spotify listening history:
 
 - **Dots** (A2 landscape): every play is one dot. Across is the date, down is the local time of day, and the colour is the artist.
 - **Covers** (A1 portrait): every play is its album cover, in order, with one band per year and the year's most-played album shown large.
+- **Calendar** (A2 portrait): one square per day, shaded by how many plays it had, with each year's total and most-played artist.
+- **Album of the month** (A1 landscape): the most-played album cover of every month, one row per year.
 
 The plays come from a Spotify streaming history export, or from a [music-warehouse](https://github.com/rcnsh/music-warehouse) instance if you run one.
 
@@ -23,9 +25,13 @@ pnpm install   # Node 23.6 or later, which runs the TypeScript directly
 3. Render:
 
    ```sh
-   pnpm render          # out/poster.png (A2, 300 dpi) and out/preview.png
-   pnpm render:covers   # out/covers.png (A1, 300 dpi) and out/covers-preview.png
+   pnpm render            # out/poster.png (A2, 300 dpi) and out/preview.png
+   pnpm render:covers     # out/covers.png (A1, 300 dpi) and out/covers-preview.png
+   pnpm render:calendar   # out/calendar.png (A2, 300 dpi) and out/calendar-preview.png
+   pnpm render:months     # out/months.png (A1, 300 dpi) and out/months-preview.png
    ```
+
+   The dots and calendar posters need only `data/plays.csv`; the covers and album-of-the-month posters also need the covers the import downloads. Album of the month fetches each month's cover once more at 640 px.
 
 The import reads every `Streaming_History_Audio_*.json` (`endsong_*.json` in exports from before 2023) and skips the video files. It keeps only song plays: podcast episodes, audiobooks and local files have no track ID and are dropped. So are plays under 30 seconds, which Spotify logs but doesn't count as plays. Each play is timed by when it stopped, in UTC.
 
@@ -44,6 +50,8 @@ pnpm fetch           # /api/plays.csv into data/plays.csv
 pnpm fetch:covers    # pages /api/plays into data/plays.json and downloads each cover once
 pnpm render
 pnpm render:covers
+pnpm render:calendar
+pnpm render:months
 ```
 
 Both fetchers read `MW_URL` and `MW_TOKEN`. On macOS the token falls back to the Keychain entry `music-warehouse-mcp`.
@@ -63,5 +71,8 @@ export default {
     { from: "2024-07-28", tz: "Asia/Singapore" },
   ],
   covers: { title: "Every song I played, by its cover" },
+  calendar: { title: "Days I listened" },
 };
 ```
+
+Each poster's own settings (`covers`, `calendar`, `months`) merge key by key, so you can change one title without repeating the rest. A day runs from 5 am to 5 am (`dayStartsAt`) on every poster, so a 1 am play counts for the evening before.
