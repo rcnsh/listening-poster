@@ -151,10 +151,14 @@ ranked.slice(0, config.colours.length).forEach(([artist, n], i) => {
 const shown = ranked.slice(0, config.colours.length).reduce((s, [, n]) => s + n, 0);
 ctx.fillStyle = config.muted;
 ctx.font = font(40);
-ctx.fillText(
-  `Grey: ${(ranked.length - config.colours.length).toLocaleString("en-GB")} other artists, ${(plays.length - shown).toLocaleString("en-GB")} plays.`,
-  x0, H - 200,
-);
+// Only when some artists are left over: a small history may have fewer
+// artists than colours.
+if (ranked.length > config.colours.length) {
+  ctx.fillText(
+    `Grey: ${(ranked.length - config.colours.length).toLocaleString("en-GB")} other artists, ${(plays.length - shown).toLocaleString("en-GB")} plays.`,
+    x0, H - 200,
+  );
+}
 ctx.textAlign = "right";
 ctx.fillText(config.footer, x1, H - 200);
 
