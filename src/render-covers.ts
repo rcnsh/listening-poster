@@ -4,7 +4,7 @@
 import { createCanvas, GlobalFonts, loadImage, type Image } from "@napi-rs/canvas";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { config } from "./config.ts";
-import type { CoverPlay } from "./covers.ts";
+import { type CoverPlay, largeCover } from "./covers.ts";
 import { wallClock } from "./time.ts";
 
 const { width: W, height: H, gap, blank } = config.covers;
@@ -47,15 +47,9 @@ for (const y of years) {
 }
 
 // The year's top album large: the 640 px rendition of the same image.
-async function largeCover(id: string) {
-  const big = id.replace(/^ab67616d00004851/, "ab67616d0000b273");
-  const path = `data/covers/large-${big}.jpg`;
-  if (!existsSync(path)) {
-    const res = await fetch(`https://i.scdn.co/image/${big}`);
-    if (!res.ok) return covers.get(id)!;
-    writeFileSync(path, Buffer.from(await res.arrayBuffer()));
-  }
-  return loadImage(path);
+async function bigCover(id: string) {
+  const path = await largeCover(id);
+  return path ? loadImage(path) : covers.get(id)!;
 }
 
 // ---- layout -------------------------------------------------------------
@@ -109,7 +103,7 @@ for (const year of years) {
   if (year.top) {
     const size = Math.min(labelW - 120, bandH - 420);
     if (size > 160) {
-      const img = await largeCover(year.top.cover);
+      const img = await bigCover(year.top.cover);
       ctx.drawImage(img, margin, y + 280, size, size);
       ctx.fillStyle = config.ink;
       ctx.font = font(44, 600);

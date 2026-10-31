@@ -38,6 +38,24 @@ export async function pool<T>(items: T[], limit: number, fn: (item: T) => Promis
 // 0000b273 (640 px) or 00001e02 (300 px).
 export const smallCover = (id: string) => id.replace(/^ab67616d0000[0-9a-f]{4}/, "ab67616d00004851");
 
+// The 640 px rendition of a 64 px cover ID, downloaded once into
+// data/covers/. Null when it can't be fetched (missing, rate-limited past the
+// retries, offline), so the caller can fall back to the 64 px file.
+export async function largeCover(id: string): Promise<string | null> {
+  const big = id.replace(/^ab67616d00004851/, "ab67616d0000b273");
+  const path = `data/covers/large-${big}.jpg`;
+  if (!existsSync(path)) {
+    try {
+      const body = Buffer.from(await (await get(`https://i.scdn.co/image/${big}`)).arrayBuffer());
+      mkdirSync("data/covers", { recursive: true });
+      writeFileSync(path, body);
+    } catch {
+      return null;
+    }
+  }
+  return path;
+}
+
 export async function downloadCovers(plays: CoverPlay[]) {
   mkdirSync("data/covers", { recursive: true });
   const ids = [...new Set(plays.map((p) => p.cover).filter((c): c is string => !!c))];
