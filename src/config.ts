@@ -1,4 +1,4 @@
-// Settings for both posters. These are neutral defaults; put your own values
+// Settings for every poster. These are neutral defaults; put your own values
 // in src/config.local.ts (gitignored), which is merged over them:
 //
 //   export default {
@@ -7,6 +7,7 @@
 //     start: "2020-01-01",
 //     timezones: [{ from: "2000-01-01", tz: "Europe/London" }],
 //     covers: { title: "Every song I played, by its cover" },
+//     calendar: { title: "Days I listened" },
 //   };
 import { existsSync } from "node:fs";
 
@@ -57,13 +58,34 @@ const defaults = {
     gap: 2,
     blank: "#1b1b24",
   },
+
+  // The calendar heatmap (pnpm render:calendar): A2 portrait on paper. Days
+  // are shaded by quartile of plays, from none to the busiest quarter.
+  calendar: {
+    out: "out/calendar.png",
+    preview: "out/calendar-preview.png",
+    title: "Days listened",
+    width: 4961,
+    height: 7016,
+    background: "#f3eee4",
+    ink: "#1d1b18",
+    muted: "#8a8275",
+    steps: ["#e7e0d3", "#f3d2a2", "#eba86e", "#d76a40", "#a8281f"],
+  },
+
 };
 
 type Config = typeof defaults;
-type Local = Partial<Omit<Config, "covers">> & { covers?: Partial<Config["covers"]> };
+type Section = "covers" | "calendar";
+type Local = Partial<Omit<Config, Section>> & { [K in Section]?: Partial<Config[K]> };
 
 const local: Local = existsSync(new URL("./config.local.ts", import.meta.url))
   ? (await import("./config.local.ts")).default
   : {};
 
-export const config: Config = { ...defaults, ...local, covers: { ...defaults.covers, ...local.covers } };
+export const config: Config = {
+  ...defaults,
+  ...local,
+  covers: { ...defaults.covers, ...local.covers },
+  calendar: { ...defaults.calendar, ...local.calendar },
+};
