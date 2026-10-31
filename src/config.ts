@@ -73,10 +73,20 @@ const defaults = {
     steps: ["#e7e0d3", "#f3d2a2", "#eba86e", "#d76a40", "#a8281f"],
   },
 
+  // The album of each month (pnpm render:months): A1 landscape.
+  months: {
+    out: "out/months.png",
+    preview: "out/months-preview.png",
+    title: "Album of the month",
+    width: 9933,
+    height: 7016,
+    background: "#0c0b0a",
+    blank: "#1b1a18",
+  },
 };
 
 type Config = typeof defaults;
-type Section = "covers" | "calendar";
+type Section = "covers" | "calendar" | "months";
 type Local = Partial<Omit<Config, Section>> & { [K in Section]?: Partial<Config[K]> };
 
 const local: Local = existsSync(new URL("./config.local.ts", import.meta.url))
@@ -88,4 +98,5 @@ export const config: Config = {
   ...local,
   covers: { ...defaults.covers, ...local.covers },
   calendar: { ...defaults.calendar, ...local.calendar },
+  months: { ...defaults.months, ...local.months },
 };
