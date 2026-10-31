@@ -15,7 +15,7 @@ Turn your Spotify listening history into print-ready posters: every song you've 
 | `months` | A1 landscape | The most-played album cover of every month, one row per year. |
 | `covers` | A1 portrait | Every play as its album cover, in order, with each year's top album shown large. |
 
-The examples are a real history of about 63,000 plays from 2020 to 2026.
+The examples are drawn from a made-up history of about 63,000 plays by 1,500 invented artists, 2020 to 2026. Run `npm run demo` to make them yourself.
 
 ## Quick start
 
@@ -38,6 +38,8 @@ npm run posters -- --import ~/Downloads/my_spotify_data.zip
 ```
 
 That imports the export, downloads the album covers, and writes all four posters to `out/`. Each comes with a small `*-preview.png` for checking on screen. The first run looks up each track's cover once, which takes a few minutes for a big library. Later runs reuse what's already downloaded.
+
+**Waiting for your export?** `npm run demo` fills `data/` with the made-up history behind the examples above, generated covers included, and makes all four posters from it. It won't overwrite data you've already imported unless you add `-- --force`.
 
 ## The `posters` command
 
@@ -66,6 +68,7 @@ With pnpm, drop the `--`: `pnpm posters calendar --import my_spotify_data.zip`. 
 
 | Script | Writes |
 |---|---|
+| `npm run demo` | A made-up history in `data/`, then all four posters |
 | `npm run import:spotify -- <path>` | `data/plays.csv`, `data/plays.json`, `data/covers/` |
 | `npm run render` | `out/poster.png` (dots) |
 | `npm run render:covers` | `out/covers.png` |
