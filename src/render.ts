@@ -14,7 +14,7 @@ const font = (size: number, weight = 500) => `${weight} ${size}px "${config.font
 
 // ---- data ---------------------------------------------------------------
 
-type Row = { played_at: string; artists: string };
+type Row = { played_at: string; artists: string; source?: string };
 type Play = { day: number; minute: number; artist: string };
 
 const rows: Row[] = parse(readFileSync(config.csv), { columns: true });
@@ -29,7 +29,9 @@ for (const [i, r] of rows.entries()) {
   plays.push({
     day: Math.floor(t / DAY),
     minute: (t % DAY) / 60_000,
-    artist: r.artists ? r.artists.split(", ")[0] : "Unknown",
+    // music-warehouse joins a track's artists with ", "; an export row holds
+    // one album artist, which may itself contain ", " (Tyler, The Creator).
+    artist: !r.artists ? "Unknown" : r.source === "export" ? r.artists : r.artists.split(", ")[0],
   });
 }
 plays.sort((a, b) => a.day - b.day || a.minute - b.minute);
