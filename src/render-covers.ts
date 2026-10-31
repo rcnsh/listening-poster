@@ -4,7 +4,7 @@
 import { createCanvas, GlobalFonts, loadImage, type Image } from "@napi-rs/canvas";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { config } from "./config.ts";
-import type { CoverPlay } from "./fetch-covers.ts";
+import type { CoverPlay } from "./covers.ts";
 import { wallClock } from "./time.ts";
 
 const { width: W, height: H, gap, blank } = config.covers;
