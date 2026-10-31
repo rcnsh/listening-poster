@@ -30,15 +30,16 @@ type Play = { ms: number; trackId: string | null; track: string; artist: string;
 
 const input = process.argv[2];
 if (!input) {
-  console.error("usage: pnpm import <export folder or .zip>");
+  console.error("usage: pnpm import:spotify <export folder or .zip>");
   process.exit(1);
 }
 
 // ---- read ---------------------------------------------------------------
 
-// Extended export: Streaming_History_Audio_*.json (video files are skipped).
-// One-year export: StreamingHistory0.json or StreamingHistory_music_0.json.
-const AUDIO = /^Streaming_History_Audio_.*\.json$/;
+// Extended export: Streaming_History_Audio_*.json, or endsong_*.json before
+// 2023 (video files are skipped). One-year export: StreamingHistory0.json or
+// StreamingHistory_music_0.json.
+const AUDIO = /^(Streaming_History_Audio_.*|endsong_\d+)\.json$/;
 const OLD = /^StreamingHistory(_music_)?\d+\.json$/;
 const wanted = (name: string) => AUDIO.test(basename(name)) || OLD.test(basename(name));
 
@@ -53,9 +54,11 @@ function readFolder(dir: string): Array<[string, string]> {
 // entries listed in the central directory, no zip64.
 function readZip(path: string): Array<[string, string]> {
   const buf = readFileSync(path);
+  // The end record sits before a comment of up to 64 KiB.
   let eocd = buf.length - 22;
-  while (eocd >= 0 && buf.readUInt32LE(eocd) !== 0x06054b50) eocd--;
-  if (eocd < 0) throw new Error(`${path} is not a zip file`);
+  const stop = Math.max(0, eocd - 0xffff);
+  while (eocd >= stop && !(buf.readUInt32LE(eocd) === 0x06054b50 && eocd + 22 + buf.readUInt16LE(eocd + 20) === buf.length)) eocd--;
+  if (eocd < stop) throw new Error(`${path} is not a zip file`);
   const count = buf.readUInt16LE(eocd + 10);
   let p = buf.readUInt32LE(eocd + 16);
   if (count === 0xffff || p === 0xffffffff) throw new Error(`${path} is a zip64 archive; unzip it and pass the folder`);
@@ -77,7 +80,9 @@ function readZip(path: string): Array<[string, string]> {
   return files.sort((a, b) => a[0].localeCompare(b[0]));
 }
 
-const files = statSync(input).isDirectory() ? readFolder(input) : readZip(input);
+let files = statSync(input).isDirectory() ? readFolder(input) : readZip(input);
+// Both exports side by side would count the overlapping year twice.
+if (files.some(([f]) => AUDIO.test(basename(f)))) files = files.filter(([f]) => AUDIO.test(basename(f)));
 if (!files.length) throw new Error(`no Streaming_History_Audio_*.json files in ${input}`);
 
 // ---- normalise ----------------------------------------------------------
@@ -159,8 +164,9 @@ await pool(todo, 4, async (id) => {
     cache[id] = thumbnail_url ? smallCover(thumbnail_url.split("/").pop()!) : null;
   } catch (e) {
     // A track Spotify no longer has answers 4xx; remember that. Anything
-    // else is left out of the cache so the next run tries again.
-    if (e instanceof HttpError && e.status >= 400 && e.status < 500) cache[id] = null;
+    // else, including a 429 that outlasted the retries, is left out of the
+    // cache so the next run tries again.
+    if (e instanceof HttpError && e.status >= 400 && e.status < 500 && e.status !== 429) cache[id] = null;
     else failed++;
     console.warn(`\n${id}: ${(e as Error).message}`);
   }

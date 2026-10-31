@@ -27,7 +27,7 @@ pnpm install   # Node 23.6 or later, which runs the TypeScript directly
    pnpm render:covers   # out/covers.png (A1, 300 dpi) and out/covers-preview.png
    ```
 
-The import reads every `Streaming_History_Audio_*.json` and skips the video files. It keeps only song plays: podcast episodes, audiobooks and local files have no track ID and are dropped. So are plays under 30 seconds, which Spotify logs but doesn't count as plays. Each play is timed by when it stopped, in UTC.
+The import reads every `Streaming_History_Audio_*.json` (`endsong_*.json` in exports from before 2023) and skips the video files. It keeps only song plays: podcast episodes, audiobooks and local files have no track ID and are dropped. So are plays under 30 seconds, which Spotify logs but doesn't count as plays. Each play is timed by when it stopped, in UTC.
 
 The export names only the album artist, so featured artists don't appear: a track "by" two artists counts for the album's artist only.
 
