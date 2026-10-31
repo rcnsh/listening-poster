@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "posters": "node src/posters.ts",
+    "demo": "node src/demo.ts",
     "import:spotify": "node src/import.ts",
     "fetch": "node src/fetch.ts",
     "render": "node src/render.ts",
